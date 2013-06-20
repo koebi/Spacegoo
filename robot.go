@@ -7,16 +7,16 @@ import (
 
 type RoBot struct{}
 
-func (bot *RoBot) Move(state GameState) (Move, error) {
+func (bot *RoBot) Move(state GameState) Move {
 	var mod int
-    if state.PlayerName(They) == "sendsomewhere" {
-        mod = 3
+	if state.PlayerName(They) == "sendsomewhere" {
+		mod = 3
 	} else {
-        mod = 2
+		mod = 2
 	}
 	if state.Round%mod != 0 {
 		for _, myp := range state.MyPlanets() {
-			min := float64(9999999)
+			min := 9999999
 			meiner := myp
 			for _, myp2 := range state.MyPlanets() {
 				if myp2.Ships.Sum() > myp.Ships.Sum() {
@@ -25,17 +25,17 @@ func (bot *RoBot) Move(state GameState) (Move, error) {
 			}
 			deiner := Planet{}
 			for _, yourp := range state.NeutralPlanets() {
-				if myp.Dist(float64(yourp.X), float64(yourp.Y)) < min {
-					min = myp.Dist(float64(yourp.X), float64(yourp.Y))
+				if myp.Dist(yourp.X, yourp.Y) < min {
+					min = myp.Dist(yourp.X, yourp.Y)
 					deiner = yourp
 				}
 			}
-			return state.Send(meiner, deiner, meiner.Ships), nil
+			return Send{meiner, deiner, meiner.Ships}
 		}
-		return state.Nop(), nil
+		return Nop{}
 	} else {
 		for _, myp := range state.MyPlanets() {
-			min := float64(9999999)
+			min := 9999999
 			meiner := myp
 			for _, myp2 := range state.MyPlanets() {
 				if myp2.Ships.Sum() > myp.Ships.Sum() {
@@ -44,14 +44,14 @@ func (bot *RoBot) Move(state GameState) (Move, error) {
 			}
 			deiner := Planet{}
 			for _, yourp := range state.TheirPlanets() {
-				if myp.Dist(float64(yourp.X), float64(yourp.Y)) < min {
-					min = myp.Dist(float64(yourp.X), float64(yourp.Y))
+				if myp.Dist(yourp.X, yourp.Y) < min {
+					min = myp.Dist(yourp.X, yourp.Y)
 					deiner = yourp
 				}
 			}
-			return state.Send(meiner, deiner, meiner.Ships), nil
+			return Send{meiner, deiner, meiner.Ships}
 		}
-		return state.Nop(), nil
+		return Nop{}
 	}
 
 }
